@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/leaderboardCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="24dp"
@@ -13,9 +14,20 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <!-- Leaderboard Position -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvLeaderboardPosition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="8dp"/>
+
         <!-- Username -->
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvUsername"
+            android:id="@+id/tvLeaderBoardUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

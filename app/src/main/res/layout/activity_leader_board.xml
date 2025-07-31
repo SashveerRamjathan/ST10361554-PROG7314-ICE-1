@@ -8,7 +8,7 @@
     tools:context=".scores.LeaderBoardActivity"
     android:padding="16dp">
 
-    <!-- Title inside MaterialCardView -->
+    <!-- Title -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardTitle"
         android:layout_width="0dp"
@@ -44,9 +44,8 @@
         app:layout_constraintTop_toBottomOf="@id/cardTitle"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnBack"
-        android:layout_marginBottom="8dp"
-        tools:ignore="NotSibling">
+        app:layout_constraintBottom_toTopOf="@id/cardBack"
+        android:layout_marginBottom="8dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvScores"
@@ -66,12 +65,11 @@
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/cardTitle"
-        app:layout_constraintBottom_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toTopOf="@id/cardBack"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:gravity="center"
-        android:paddingTop="40dp"
-        tools:ignore="NotSibling" />
+        android:paddingTop="40dp" />
 
     <!-- Back Button inside MaterialCardView -->
     <com.google.android.material.card.MaterialCardView

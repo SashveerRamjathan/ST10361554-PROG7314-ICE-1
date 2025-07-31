@@ -131,7 +131,11 @@ class SnakeGameActivity : AppCompatActivity()
             scoreId = scoreId
         )
 
-        firestore.collection("snake_scores").document(scoreId).set(score)
+        firestore.collection("users")
+            .document(userId)
+            .collection("scores")
+            .document(scoreId)
+            .set(score)
             .addOnSuccessListener {
                 Toast.makeText(this, "Score saved successfully", Toast.LENGTH_SHORT).show()
             }

@@ -93,8 +93,7 @@ class UserScoresActivity : AppCompatActivity()
         }
     }
 
-    private suspend fun loadUserScores(): List<Score>
-    {
+    private suspend fun loadUserScores(): List<Score> {
         // Get the current user
         val user = auth.currentUser ?: return emptyList()
 
@@ -102,10 +101,10 @@ class UserScoresActivity : AppCompatActivity()
         val userId = user.uid
 
         return try {
-
-            // Create a reference to the "snake_scores" collection in Firestore
-            val querySnapshot = firestore.collection("snake_scores")
-                .whereEqualTo("userId", userId)
+            // Reference to the user's "scores" subcollection
+            val querySnapshot = firestore.collection("users")
+                .document(userId)
+                .collection("scores")
                 .get()
                 .await()
 
@@ -113,10 +112,8 @@ class UserScoresActivity : AppCompatActivity()
             val scoreList = querySnapshot.documents.mapNotNull { it.toObject(Score::class.java) }
 
             // Sort the list of scores by timestamp in descending order
-            return scoreList.sortedByDescending { it.timestamp }
-
-        } catch (e: Exception)
-        {
+            scoreList.sortedByDescending { it.timestamp }
+        } catch (e: Exception) {
             // If fetch failed, return empty list
             emptyList()
         }

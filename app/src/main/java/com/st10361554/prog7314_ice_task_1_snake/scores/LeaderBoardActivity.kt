@@ -80,24 +80,31 @@ class LeaderBoardActivity : AppCompatActivity()
         }
     }
 
-    private suspend fun loadScores(): List<Score>
-    {
+    private suspend fun loadScores(): List<Score> {
         return try {
+            // Step 1: Get all users
+            val usersSnapshot = firestore.collection("users").get().await()
+            val allScores = mutableListOf<Score>()
 
-            // Create a reference to the "snake_scores" collection in Firestore
-            val querySnapshot = firestore.collection("snake_scores")
-                .get()
-                .await()
+            // Step 2: For each user, get their scores subcollection
+            for (userDoc in usersSnapshot.documents) {
+                val scoresSnapshot = firestore.collection("users")
+                    .document(userDoc.id)
+                    .collection("scores")
+                    .get()
+                    .await()
 
-            // Convert the results to a list of Score objects
-            val scoreList = querySnapshot.documents.mapNotNull { it.toObject(Score::class.java) }
+                // Step 3: Add all scores to the list
+                val userScores = scoresSnapshot.documents.mapNotNull {
+                    it.toObject(Score::class.java)
+                }
+                allScores.addAll(userScores)
+            }
 
-            // Sort and take top 10
-            return scoreList.sortedByDescending { it.timestamp }.take(10)
-
-        } catch (e: Exception)
-        {
-            // If fetch failed, return empty list
+            // Step 4: Sort and take top 10
+            allScores.sortedByDescending { it.timestamp }.take(10)
+        } catch (e: Exception) {
+            e.printStackTrace()
             emptyList()
         }
     }
