@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PROG7314ICETask1Snake">
         <activity
+            android:name=".game.SnakeGameActivity"
+            android:exported="false" />
+        <activity
             android:name=".landing.RegisterActivity"
             android:exported="false" />
         <activity
