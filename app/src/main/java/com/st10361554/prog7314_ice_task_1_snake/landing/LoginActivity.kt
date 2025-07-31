@@ -12,26 +12,35 @@ import com.google.firebase.auth.FirebaseAuth
 import com.st10361554.prog7314_ice_task_1_snake.MainActivity
 import com.st10361554.prog7314_ice_task_1_snake.databinding.ActivityLoginBinding
 
+/**
+ * LoginActivity handles user authentication with Firebase.
+ * It provides UI for email/password input, login, and navigation to registration.
+ */
 class LoginActivity : AppCompatActivity() {
-    // View binding
+    // View binding for accessing UI components
     private lateinit var binding: ActivityLoginBinding
 
-    // Firebase Authentication
+    // Firebase Authentication instance
     private lateinit var auth: FirebaseAuth
 
-    // View components
+    // UI components for user input and actions
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
     private lateinit var btnRegister: Button
 
+    /**
+     * Called when the activity is starting. Initializes UI and authentication logic.
+     */
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
+        // Inflate the layout using view binding
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set window insets to avoid overlap with system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -41,40 +50,37 @@ class LoginActivity : AppCompatActivity() {
         // Initialize Firebase Authentication
         auth = FirebaseAuth.getInstance()
 
-        // Initialize view components
+        // Get references to UI components
         etEmail = binding.etEmail
         etPassword = binding.etPassword
         btnLogin = binding.btnLogin
         btnRegister = binding.tvRegister
 
-        // On click listener for the login button
+        // Login button click listener
         btnLogin.setOnClickListener {
 
-            // Get email and password from edit texts
+            // Get email and password from EditText fields
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            // Error handling
-            // Email validation
+            // Validate email input
             if (email.isEmpty()) {
                 etEmail.error = "Email is required"
                 etEmail.requestFocus()
                 return@setOnClickListener
             }
-            // Password validation
+            // Validate password input
             if (password.isEmpty()) {
                 etPassword.error = "Password is required"
                 etPassword.requestFocus()
                 return@setOnClickListener
             }
 
-            // Attempt to sign in with email and password
+            // Attempt to sign in with Firebase Authentication
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Display success message
+                    // Show success message and navigate to MainActivity
                     Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-
-                    // Navigate to MainActivity
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()
@@ -85,10 +91,10 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // On click listener for the register button
+        // Register button click listener
         btnRegister.setOnClickListener {
-            // Navigate to UserEmailPasswordActivity
-            val intent = Intent(this,RegisterActivity::class.java)
+            // Navigate to RegisterActivity for creating a new account
+            val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
             finish()
         }

@@ -20,11 +20,15 @@ import com.st10361554.prog7314_ice_task_1_snake.databinding.ActivityRegisterBind
 import com.st10361554.prog7314_ice_task_1_snake.models.User
 import kotlinx.coroutines.launch
 
+/**
+ * RegisterActivity handles user registration with Firebase Authentication and Firestore.
+ * It includes validation, account creation, saving profile data, and navigation to login or main screens.
+ */
 class RegisterActivity : AppCompatActivity()
 {
     private lateinit var binding: ActivityRegisterBinding
 
-    // View Components
+    // View Components for user input and actions
     private lateinit var etUsername: EditText
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
@@ -35,16 +39,21 @@ class RegisterActivity : AppCompatActivity()
     // Firebase Authentication
     private lateinit var auth: FirebaseAuth
 
-    // Firestore Database
+    // Firestore Database instance
     private lateinit var firestore: FirebaseFirestore
 
+    /**
+     * Called when the activity is created. Sets up UI, Firebase, and listeners.
+     */
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
+        // Inflate layout using view binding
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set window insets for status/navigation bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -59,85 +68,87 @@ class RegisterActivity : AppCompatActivity()
         btnRegister = binding.btnRegister
         btnLogin = binding.btnLogin
 
-        // Initialize Firebase Authentication
+        // Initialize Firebase Authentication and Firestore
         auth = FirebaseAuth.getInstance()
-
-        // Initialize Firestore Database
         firestore = FirebaseFirestore.getInstance()
 
         setOnClickListeners()
     }
 
+    /**
+     * Validates registration fields for completeness, email format, password length, and match.
+     * Shows errors on fields if validation fails.
+     * @return true if all fields are valid, false otherwise
+     */
     private fun validateFields(
         username: String,
         email: String,
         password: String,
         confirmPassword: String
     ) : Boolean {
-        //check if all fields are filled
+        // Check if all fields are filled
         if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && username.isNotEmpty()) {
-            // check if email is valid (contains "@" and 1 "." after "@")
+            // Check for valid email format ("@" and "." present, and "." after "@")
             if (!email.contains("@") || !email.contains(".")) {
                 etEmail.error = "Email is invalid"
                 etEmail.requestFocus()
                 return false
             }
-
-            // check if ("." after "@" is not the last character)
             if (email.lastIndexOf(".") < email.lastIndexOf("@")) {
                 etEmail.error = "Email is invalid"
                 etEmail.requestFocus()
                 return false
             }
-
-            // check if password is valid (at least 6 characters)
+            // Password must be at least 6 characters
             if (password.length < 6) {
                 etPassword.error = "Password must be at least 6 characters"
                 etPassword.requestFocus()
                 return false
             }
-
-            // check if password and confirm password match
+            // Password and confirmation must match
             if (password != confirmPassword) {
-                // show error message in text fields
                 etPassword.error = "Passwords do not match"
                 etPassword.requestFocus()
                 etConfirmPassword.error = "Passwords do not match"
                 etConfirmPassword.requestFocus()
-
                 return false
             }
         } else {
-            // show error message
+            // At least one field is empty
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             return false
         }
-
         return true
     }
 
+    /**
+     * Sets click listeners for login and register buttons.
+     * Handles navigation and user registration logic.
+     */
     private fun setOnClickListeners()
     {
+        // Navigate to LoginActivity when user presses "Login"
         btnLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
+        // Register new user when user presses "Register"
         btnRegister.setOnClickListener {
 
-            // get values from fields
+            // Get input values from fields
             val username = etUsername.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
             val confirmPassword = etConfirmPassword.text.toString().trim()
 
-            // validate fields
+            // Validate all fields first
             val isValid = validateFields(username, email, password, confirmPassword)
 
             if (isValid)
             {
-                // create user in firebase auth
+                // Create user in Firebase Authentication
                 registerUser(
                     email = email,
                     password = password,
@@ -145,50 +156,41 @@ class RegisterActivity : AppCompatActivity()
                 )
                 { registeredUser ->
 
-                    // get the users id
+                    // If registration succeeded, get user details
                     val userId = registeredUser!!.uid
-
-                    // get the users email
                     val userEmail = registeredUser.email
 
+                    // Create User model for Firestore
                     val newUser = User(
                         userId = userId,
                         username = username,
                         email = userEmail ?: ""
                     )
 
+                    // Add user to Firestore in background with coroutine
                     lifecycleScope.launch {
-                        // add user to Firebase FireStore
                         firestore.collection("users").document(newUser.userId).set(newUser)
-
                             .addOnSuccessListener {
-
-                                // display toast
+                                // Show success toast and navigate to MainActivity
                                 Toast.makeText(
                                     this@RegisterActivity,
                                     "User Created Successfully",
                                     Toast.LENGTH_SHORT
                                 ).show()
-
-                                // navigate to main activity
                                 val intent = Intent(this@RegisterActivity, MainActivity::class.java)
                                 startActivity(intent)
                                 finish()
                             }
-
                             .addOnFailureListener { e ->
-                                // log the error
+                                // Log and show error if Firestore save fails
                                 Log.e(
                                     "RegisterActivity",
                                     "Error adding user to FireStore",
                                     e
                                 )
-
-                                // display toast
                                 Toast.makeText(this@RegisterActivity, "Error Saving Profile", Toast.LENGTH_SHORT)
                                     .show()
-
-                                // navigate back to register activity
+                                // Restart registration activity on failure
                                 val intent = Intent(this@RegisterActivity, RegisterActivity::class.java)
                                 startActivity(intent)
                                 finish()
@@ -196,10 +198,13 @@ class RegisterActivity : AppCompatActivity()
                     }
                 }
             }
-
         }
     }
 
+    /**
+     * Registers a user in Firebase Authentication and sets their display name.
+     * Calls the callback with the FirebaseUser on success, or null on failure.
+     */
     private fun registerUser(email: String, password: String, username: String, callback: (FirebaseUser?) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -208,10 +213,10 @@ class RegisterActivity : AppCompatActivity()
                     Toast.makeText(this, "User Registration Successful", Toast.LENGTH_SHORT).show()
                     Log.d("RegisterActivity", "User Registration Successful")
 
-                    // Get the currently signed-in user
+                    // Get current user
                     val user = auth.currentUser
 
-                    // Set displayName to username
+                    // Set displayName to username so it shows in profile
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setDisplayName(username)
                         .build()
@@ -225,30 +230,27 @@ class RegisterActivity : AppCompatActivity()
                     }
                 }
                 else if (task.exception is FirebaseAuthUserCollisionException) {
-                    // Registration failed due to email already in use
+                    // Email already in use error
                     Toast.makeText(this, "Email already in use", Toast.LENGTH_SHORT).show()
                     Log.e("RegisterActivity", "Email already in use", task.exception)
-
-                    callback(null)  // Return null if registration fails
+                    callback(null)
                 }
                 else {
-                    // Registration failed
+                    // Other registration failure
                     Toast.makeText(
                         this,
                         "Registration Failed: ${task.exception?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                     Log.e("RegisterActivity", "Registration Failed", task.exception)
-
-                    callback(null)  // Return null if registration fails
+                    callback(null)
                 }
             }
             .addOnFailureListener { e ->
-                // Registration failed
+                // Registration failed due to other reasons (network, etc)
                 Toast.makeText(this, "Registration Failed: ${e.message}", Toast.LENGTH_SHORT).show()
                 Log.e("RegisterActivity", "Registration Failed", e)
-
-                callback(null)  // Return null if registration fails
+                callback(null)
             }
     }
 }

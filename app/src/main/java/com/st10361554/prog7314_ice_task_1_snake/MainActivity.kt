@@ -28,68 +28,73 @@ class MainActivity : AppCompatActivity()
     // Firebase Authentication
     private lateinit var auth: FirebaseAuth
 
+    // Called when the activity is starting
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
+        // Inflate the layout for this activity using View Binding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set window insets to ensure UI fits system bars (status/navigation)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Initialize view components
+        // Initialize view components from the binding
         btnPlaySnakeGame = binding.btnPlaySnakeGame
         btnUserScores = binding.btnUserScores
         btnOnlineLeaderBoard = binding.btnOnlineLeaderBoard
         btnLogout = binding.btnLogout
         tvUsername = binding.tvUsername
 
-        // Initialize Firebase Authentication
+        // Initialize Firebase Authentication instance
         auth = FirebaseAuth.getInstance()
 
-        // Set username
+        // Set the username in the TextView if user is logged in
         setUsername()
 
+        // Set up click listeners for all buttons
         setOnClickListeners()
-
     }
 
+    // Sets the TextView to display the current user's display name, if logged in
     private fun setUsername() {
         val user = auth.currentUser
-
         if (user != null) {
-
             tvUsername.text = user.displayName
         }
     }
 
+    // Sets up click listeners for all buttons on the main screen
     private fun setOnClickListeners()
     {
+        // Logout button: signs out user and navigates to LoginActivity
         btnLogout.setOnClickListener {
-
-            // Sign out user
+            // Sign out user from Firebase
             auth.signOut()
-
-            // Navigate to LoginActivity
+            // Navigate to LoginActivity and finish this activity
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
+        // Play Snake Game button: starts the SnakeGameActivity
         btnPlaySnakeGame.setOnClickListener {
             val intent = Intent(this, SnakeGameActivity::class.java)
             startActivity(intent)
         }
 
+        // User Scores button: starts the UserScoresActivity
         btnUserScores.setOnClickListener {
             val intent = Intent(this, UserScoresActivity::class.java)
             startActivity(intent)
         }
 
+        // Online LeaderBoard button: starts the LeaderBoardActivity
         btnOnlineLeaderBoard.setOnClickListener {
             val intent = Intent(this, LeaderBoardActivity::class.java)
             startActivity(intent)
