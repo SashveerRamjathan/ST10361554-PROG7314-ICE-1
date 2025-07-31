@@ -1,3 +1,26 @@
 <resources>
-    <string name="app_name">PROG7314-ICE-Task-1-Snake</string>
+    <string name="app_name">Snake Game</string>
+    <string name="login_welcome_back">Welcome Back!</string>
+    <string name="login_email_address">Email Address</string>
+    <string name="login_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_register_nav">Don\'t have an account? Register</string>
+    <string name="register_confirm_password">Confirm Password</string>
+    <string name="register">Username</string>
+    <string name="btn_register">Register</string>
+    <string name="btn_login_nav">Already have an account? Login</string>
+    <string name="register_title_create_an_account">Create an Account</string>
+    <string name="tv_user_welcome_to_snake_game">Welcome to Snake Game!</string>
+    <string name="btn_play_snake_game">Play Snake Game</string>
+    <string name="btn_my_scores">My Scores</string>
+    <string name="btn_leader_board">Online Leader Board</string>
+    <string name="btn_logout">Logout</string>
+    <string name="tv_username">Username:</string>
+    <string name="txt_up">Up</string>
+    <string name="tv_date">Date</string>
+    <string name="tv_score">Score</string>
+    <string name="tv_snake_game_leader_board">Snake Game Leader Board</string>
+    <string name="tv_no_scores_to_display">No Scores to Display</string>
+    <string name="btn_back_to_menu">Back to Menu</string>
+    <string name="tv_user_snake_game_scores">User, Snake Game Scores</string>
 </resources>

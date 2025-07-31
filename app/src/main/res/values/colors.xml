@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#34C759</color>
+    <color name="teal">#60C4BA</color>
+    <color name="gold">#E0A13B</color>
+    <color name="red">#FF4C4C</color>
+    <color name="snake_red">#FD0000</color>
+    <color name="snake_green">#3AFF0E</color>
+
+    <color name="appBackground">#F8F9FA</color>
+    <color name="chipBackground">#F1F8E9</color>
+    <color name="pauseButton">#FFD54F</color>
+    <color name="pauseIcon">#37474F</color>
+    <color name="gameCard">#FFFFFF</color>
 </resources>
